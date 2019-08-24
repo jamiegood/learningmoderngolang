@@ -1,8 +1,9 @@
 package databaselayer
 
-import "errors"
+import (
+	"errors"
+)
 
-// constants, this is how you do an enum in go
 const (
 	MYSQL uint8 = iota
 	SQLITE
@@ -10,16 +11,14 @@ const (
 	MONGODB
 )
 
-// DinoDBHandler comment here
 type DinoDBHandler interface {
-	GetAvailDynos() ([]Animal, error)
-	GetDynosByNickname(string) (Animal, error)
+	GetAvailableDynos() ([]Animal, error)
+	GetDynoByNickname(string) (Animal, error)
 	GetDynosByType(string) ([]Animal, error)
 	AddAnimal(Animal) error
 	UpdateAnimal(Animal, string) error
 }
 
-//Animal comment
 type Animal struct {
 	ID         int    `bson:"-"`
 	AnimalType string `bson:"animal_type"`
@@ -28,22 +27,20 @@ type Animal struct {
 	Age        int    `bson:"age"`
 }
 
-//ErrDBTypeNotSupported comment
-var ErrDBTypeNotSupported = errors.New("the Database type provided is not supported")
+var DBTypeNotSupported = errors.New("The Database type provided is not supported...")
 
-// GetDatabaseHandler factory
+//factory function
 func GetDatabaseHandler(dbtype uint8, connection string) (DinoDBHandler, error) {
 
 	switch dbtype {
 	case MYSQL:
 		return NewMySQLHandler(connection)
 	case MONGODB:
-		return NewMongoDBHandler(connection)
+		return NewMongodbHandler(connection)
 	case SQLITE:
 		return NewSQLiteHandler(connection)
 	case POSTGRESQL:
 		return NewPQHandler(connection)
-
 	}
-	return nil, ErrDBTypeNotSupported
+	return nil, DBTypeNotSupported
 }

@@ -12,7 +12,7 @@ import (
 
 	"sync"
 
-	client "github.com/influxdata/influxdb1-client/v2"
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 //collect the weights of each animal on a frequent basis => time series dataset
@@ -20,7 +20,7 @@ import (
 
 var animaltags = []string{"Tyrannosaurus rex;Rex", "Velociraptor;Rapto", "Velociraptor;Velo", "Carnotaurus;Carno"}
 
-const myDB = "dino2"
+const myDB = "dino"
 
 func main() {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
@@ -58,7 +58,6 @@ func main() {
 		pt, err := client.NewPoint("weightmeasures", tags, fields, time.Now())
 		if err != nil {
 			log.Println(err)
-			log.Println("The fuck?")
 			continue
 		}
 		bp.AddPoint(pt)
@@ -66,8 +65,6 @@ func main() {
 	}
 	log.Println("Exit signal triggered, writing data... ")
 	if err := c.Write(bp); err != nil {
-		log.Println("houstin we have a problem...")
-
 		log.Fatal(err)
 	}
 	wg.Wait()

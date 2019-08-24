@@ -3,15 +3,13 @@ package databaselayer
 import (
 	"database/sql"
 
-	_ "github.com/mattn/go-sqlite3" //comment
+	_ "github.com/mattn/go-sqlite3"
 )
 
-//SQLiteHandler ...
 type SQLiteHandler struct {
 	*SQLHandler
 }
 
-//NewSQLiteHandler ...
 func NewSQLiteHandler(connection string) (*SQLiteHandler, error) {
 	db, err := sql.Open("sqlite3", connection)
 	return &SQLiteHandler{
@@ -19,5 +17,4 @@ func NewSQLiteHandler(connection string) (*SQLiteHandler, error) {
 			DB: db,
 		},
 	}, err
-
 }

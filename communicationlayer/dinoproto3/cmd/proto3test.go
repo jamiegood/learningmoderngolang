@@ -2,6 +2,7 @@ package main
 
 import (
 	"dino/communicationlayer/dinoproto3"
+	"dino/databaselayer"
 	"flag"
 	"fmt"
 	"net"
@@ -70,41 +71,43 @@ func RunProto3Server() {
 			log.Fatal(err)
 		}
 		defer l.Close()
-		go func(c net.Conn) {
-			defer c.Close()
-			data, err := ioutil.ReadAll(c)
-			if err != nil {
-				return
-			}
-			a := &dinoproto3.Animal{}
-			err = proto.Unmarshal(data, a)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			fmt.Println(a)
-		}(c)
+		//go func(c net.Conn) {
+		defer c.Close()
+		data, err := ioutil.ReadAll(c)
+		if err != nil {
+			return
+		}
+		a := &dinoproto3.Animal{}
+		err = proto.Unmarshal(data, a)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		fmt.Println(a)
+		//}(c)
+		fmt.Println("I should not be blocked")
 	}
 }
 
-// func SendDBToServer() {
-// 	handler, err := databaselayer.GetDatabaseHandler(databaselayer.MONGODB, "mongodb://127.0.0.1")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	animals, err := handler.GetAvailableDynos()
-// 	for _, animal := range animals {
-// 		a := &dinoproto3.Animal{
-// 			Id:         int32(animal.ID),
-// 			AnimalType: animal.AnimalType,
-// 			Nickname:   animal.Nickname,
-// 			Zone:       int32(animal.Zone),
-// 			Age:        int32(animal.Age),
-// 		}
-// 		data, err := proto.Marshal(a)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		SendData(data)
-// 	}
-// }
+//SendDBToServer ...
+func SendDBToServer() {
+	handler, err := databaselayer.GetDatabaseHandler(databaselayer.MONGODB, "mongodb://127.0.0.1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	animals, err := handler.GetAvailableDynos()
+	for _, animal := range animals {
+		a := &dinoproto3.Animal{
+			Id:         int32(animal.ID),
+			AnimalType: animal.AnimalType,
+			Nickname:   animal.Nickname,
+			Zone:       int32(animal.Zone),
+			Age:        int32(animal.Age),
+		}
+		data, err := proto.Marshal(a)
+		if err != nil {
+			log.Fatal(err)
+		}
+		SendData(data)
+	}
+}

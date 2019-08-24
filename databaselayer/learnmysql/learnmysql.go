@@ -17,23 +17,20 @@ type animal struct {
 }
 
 func main() {
-	db, err := sql.Open("mysql", "root:@/Dino")
+	//connect to the database
+	db, err := sql.Open("mysql", "gouser:gouser@/Dino")
 	if err != nil {
 		log.Fatal(err)
-
-	} else {
-		fmt.Println("connected")
-
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select * from Dino.animals where age > ?", 1)
+	//general query with arguments
+	rows, err := db.Query("select * from animals where age > ?", 10)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 	animals := []animal{}
-
 	for rows.Next() {
 		a := animal{}
 		err := rows.Scan(&a.id, &a.animalType, &a.nickname, &a.zone, &a.age)
@@ -43,30 +40,37 @@ func main() {
 		}
 
 		animals = append(animals, a)
-
 	}
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Println(animals)
 
-	//return a single method
-	row := db.QueryRow("select * from Dino.animals where id=?", 1)
+	//query a single row
+	row := db.QueryRow("select * from Dino.animals where age > ?", 10)
 	a := animal{}
 	err = row.Scan(&a.id, &a.animalType, &a.nickname, &a.zone, &a.age)
 	if err != nil {
-
+		log.Fatal(err)
 	}
 	fmt.Println(a)
+	/*
+				//insert a row
+				result, err := db.Exec("Insert into Dino.animals (animal_type,nickname,zone,age) values ('Carnotaurus', 'Carno', 3, 22)")
+				if err != nil {
+					log.Fatal(err)
+				}
 
-	//insert a row
-	result, err := db.Exec("insert into Dino.animals (animal_type, nickname, zone, age) values ('Titanosours', 'titan', 3, 22)")
-	if err != nil {
-		log.Fatal(err)
+				fmt.Println(result.LastInsertId())
+				fmt.Println(result.RowsAffected())
 
-	}
-	fmt.Println(result.LastInsertId())
-	fmt.Println(result.RowsAffected())
+		        //update a row
+		        result, err := db.Exec("Update Dino.animals set age = ? where id=?", 16, 2)
+		        if err != nil {
+		            log.Fatal(err)
+		        }
+		        fmt.Println(result.LastInsertId())
+		        fmt.Println(result.RowsAffected())
+	*/
 
 }

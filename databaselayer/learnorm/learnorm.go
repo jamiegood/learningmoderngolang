@@ -10,6 +10,7 @@ import (
 
 type animal struct {
 	gorm.Model
+	//ID         int    `gorm:"primary_key;not null;unique;AUTO_INCREMENT"`
 	Animaltype string `gorm:"type:TEXT"`
 	Nickname   string `gorm:"type:TEXT"`
 	Zone       int    `gorm:"type:INTEGER"`
@@ -20,38 +21,38 @@ func main() {
 	db, err := gorm.Open("sqlite3", "dino.db")
 	if err != nil {
 		log.Fatal(err)
-
-	} else {
-		fmt.Println("connected")
-
 	}
 	defer db.Close()
 
-	//
-	//db.DropTableIfExists(&animal{})
-	db.AutoMigrate(&animal{})
-	//db.Table("dinos").CreateTable(&animal{})
+	db.DropTableIfExists(&animal{})
+	db.Table("dinos").DropTableIfExists(&animal{})
+	db.AutoMigrate(&animal{}) // will add any missing fields, will add 's' to the struct name
+	db.Table("dinos").AutoMigrate(&animal{})
+
+	//inserts:
 	a := animal{
-		Animaltype: "Trex2",
+		Animaltype: "Tyrannosaurus rex",
 		Nickname:   "rex",
 		Zone:       1,
-		Age:        50,
+		Age:        11,
 	}
-	db.Create(&a)
-	//db.Table("dinos").Create
+	db.Create(&a) //vs create()
+	db.Table("dinos").Create(&a)
+
 	a = animal{
-		Animaltype: "Reptor",
-		Nickname:   "Rap",
+		Animaltype: "Velociraptor",
+		Nickname:   "rapto",
 		Zone:       2,
-		Age:        22,
+		Age:        15,
 	}
-	db.Save(&a)
+	db.Save(&a) //vs create()
 
-	//udpates
-	//db.Table("animals").Where("nickname=? and zone=?", "Rap", 2).Update("age", 36)
+	//updates
+	//db.Table("animals").Where("nickname = ? and zone= ?", "rapto", 2).Update("age", 16)
 
+	//queries
 	animals := []animal{}
-	db.Find(&animals, "age >= ?", 35)
-	fmt.Println(&animals)
+	db.Table("dinos").Find(&animals, "age > ?", 10) //first
+	fmt.Println(animals)
 
 }
