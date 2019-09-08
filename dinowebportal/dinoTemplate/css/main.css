@@ -122,6 +122,17 @@ body {
   font-weight: bold;
 }
 
+/*
+ * custom classes
+ */
+
+ .dinoname {
+   color: black;
+ }
+
+ .dinodata {
+   color: red;
+ }
 
 /*
  * Footer
