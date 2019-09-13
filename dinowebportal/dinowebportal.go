@@ -5,6 +5,7 @@ import (
 	"dino/dinowebportal/dinoTemplate"
 	"dino/dinowebportal/dinoapi"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -27,14 +28,24 @@ type DataFeedMessage struct {
 
 //RunWebPortal starts running the dino web portal on address addr
 func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
+
 	rand.Seed(time.Now().UTC().UnixNano())
+
 	r := mux.NewRouter()
+
 	db, err := databaselayer.GetDatabaseHandler(dbtype, dbconnection)
+
 	if err != nil {
+		fmt.Println(err)
+
 		return err
+
 	}
+	fmt.Println("we got this far")
+
 	dinoapi.RunAPIOnRouter(r, db)
 
+	fmt.Println("we got this far")
 	r.Path("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		dinoTemplate.Homepage("Dino Portal", "Welcome to the Dino portal, where you can find metrics and information ...", w)
 	})
