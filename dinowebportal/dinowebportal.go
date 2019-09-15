@@ -13,6 +13,7 @@ import (
 	"log"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,10 +22,20 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+// DataFeedMessage ...
 type DataFeedMessage struct {
 	Heartrate     int
 	Bloodpressure int
 }
+
+//var cookieStore = session.NewCookieStore([]byte("somtheing-very-secret"))
+var cookieStore = sessions.NewCookieStore([]byte("fdsfdsfdsfdsfds"))
+
+const (
+	INPUTNAME     = "inputname" // inputname this is a comment
+	SIGNINSESSION = "signinsession"
+	USERNAME      = "username"
+)
 
 //RunWebPortal starts running the dino web portal on address addr
 func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
@@ -47,6 +58,25 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 
 	fmt.Println("we got this far")
 	r.Path("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+
+		session, err := cookieStore.Get(req, SIGNINSESSION)
+		if err != nil {
+			return
+		}
+		fmt.Println(session.Values)
+		val, ok := session.Values[USERNAME]
+
+		if !ok {
+			dinoTemplate.HandleSignUp(w)
+			return
+		}
+
+		name, ok := val.(string)
+		if !ok {
+
+		}
+		//
+
 		dinoTemplate.Homepage("Dino Portal", "Welcome to the Dino portal, where you can find metrics and information ...", w)
 	})
 
