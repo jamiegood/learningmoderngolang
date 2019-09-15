@@ -6,7 +6,7 @@ $('#dinometrics tr').each(function() {
     //dinodata.text(dinoname.text());
     
    // if(socket==null)
-   var Socket = new WebSocket("ws://localhost:8181/dinodatafeed");
+   var Socket = new WebSocket("ws://localhost:3333/dinodatafeed");
     Socket.onopen = function(event){
         Socket.send(dinoname.text());
         Socket.onmessage = function(event){

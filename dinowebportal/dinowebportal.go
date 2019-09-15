@@ -75,9 +75,16 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 
 func dinoDataFeedHandler(w http.ResponseWriter, r *http.Request) {
 
+	fmt.Println("inside datafeed")
+
 	conn, err := upgrader.Upgrade(w, r, nil)
+	fmt.Println("inside datafeed")
+
 	if err != nil {
 		log.Println("Could not establish websocket connection, error", err)
+		fmt.Println("Could not establish websocket connection, error")
+		fmt.Println(err)
+
 		return
 	}
 	defer conn.Close()
