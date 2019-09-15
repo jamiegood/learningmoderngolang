@@ -73,11 +73,12 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 
 		name, ok := val.(string)
 		if !ok {
-
+			dinoTemplate.HandleSignUp(w)
+			return
 		}
 		//
 
-		dinoTemplate.Homepage("Dino Portal", "Welcome to the Dino portal, where you can find metrics and information ...", w)
+		dinoTemplate.Homepage("Dino Portal", fmt.Sprintf("Welcome %s, where you can find metrics and information", name), w)
 	})
 
 	r.PathPrefix("/metrics/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
