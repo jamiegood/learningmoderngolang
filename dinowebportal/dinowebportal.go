@@ -81,6 +81,26 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 		dinoTemplate.Homepage("Dino Portal", fmt.Sprintf("Welcome %s, where you can find metrics and information", name), w)
 	})
 
+	r.Path("/signup/").Methods("POST").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		err := req.ParseForm()
+		if err != nil {
+			return
+		}
+		namelist := req.Form[INPUTNAME]
+		session, err := cookieStore.Get(req, SIGNINSESSION)
+		if err != nil {
+			return
+		}
+
+		if len(namelist) == 0 {
+			return
+		}
+		session.Values[USERNAME] = namelist[0]
+		session.Save(req, w)
+		dinoTemplate.Homepage("Dino Portal", fmt.Sprintf("Welcome %s, where you can find metrics and information", namelist[0]), w)
+
+	})
+
 	r.PathPrefix("/metrics/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		animals, err := db.GetAvailableDynos()
 		if err != nil {
