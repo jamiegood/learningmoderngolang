@@ -34,7 +34,7 @@ var cookieStore = sessions.NewCookieStore([]byte("fdsfdsfdsfdsfds"))
 const (
 	INPUTNAME     = "inputname" // inputname this is a comment
 	SIGNINSESSION = "signinsession"
-	USERNAME      = "username"
+	USERNAME      = "inputname"
 )
 
 //RunWebPortal starts running the dino web portal on address addr
@@ -67,12 +67,16 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 		val, ok := session.Values[USERNAME]
 
 		if !ok {
+			fmt.Println("sessions fail")
+
 			dinoTemplate.HandleSignUp(w)
 			return
 		}
 
 		name, ok := val.(string)
 		if !ok {
+			fmt.Println("sessions fail2")
+
 			dinoTemplate.HandleSignUp(w)
 			return
 		}
@@ -81,22 +85,47 @@ func RunWebPortal(dbtype uint8, addr, dbconnection, frontend string) error {
 		dinoTemplate.Homepage("Dino Portal", fmt.Sprintf("Welcome %s, where you can find metrics and information", name), w)
 	})
 
-	r.Path("/signup/").Methods("POST").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	r.PathPrefix("/signup/").Methods("POST").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		err := req.ParseForm()
+		fmt.Println("sign up00000000")
+		fmt.Println(req.URL)
+		fmt.Println(req.Method)
+		fmt.Println(req.PostForm)
+		fmt.Println(req.UserAgent())
+		for key, values := range req.PostForm { // range over map
+			for _, value := range values { // range over []string
+				log.Println(key, value)
+			}
+		}
 		if err != nil {
+			fmt.Println("sign up1")
+
 			return
 		}
-		namelist := req.Form[INPUTNAME]
+		fmt.Println(req.Form)
+
+		namelist := req.Form["inputname"]
+		fmt.Println("sign up4 namelist")
+		fmt.Println(namelist)
+
 		session, err := cookieStore.Get(req, SIGNINSESSION)
 		if err != nil {
+			fmt.Println("sign up2")
+
 			return
 		}
 
 		if len(namelist) == 0 {
+			fmt.Println("sign up3")
+
 			return
 		}
+		fmt.Println("sign up4")
+
 		session.Values[USERNAME] = namelist[0]
 		session.Save(req, w)
+		fmt.Println("sign up5")
+
 		dinoTemplate.Homepage("Dino Portal", fmt.Sprintf("Welcome %s, where you can find metrics and information", namelist[0]), w)
 
 	})
